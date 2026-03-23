@@ -1,22 +1,23 @@
 from django.db import models
 from django.contrib.auth.models import User
 
-
+DEFAULT_CATEGORIES = [
+    ("Food", 30, "food.svg"),
+    ("Rent", 40, "rent.svg"),
+    ("Transport", 10, "transport.svg"),
+    ("Entertainment", 10, "fun.svg"),
+    ("Savings", 10, "savings.svg"),
+]
 class Profile(models.Model):
     UNIVERSITY_CHOICES = [
         ('public', 'Public University'),
         ('private', 'Private University'),
     ]
 
-    GENDER_CHOICES = [
-        ('male', 'Male'),
-        ('female', 'Female'),
-    ]
 
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     university_type = models.CharField(max_length=10, choices=UNIVERSITY_CHOICES)
-    semester_duration = models.IntegerField(help_text="Semester duration in months")
-    gender = models.CharField(max_length=10, choices=GENDER_CHOICES)
+    semester_duration = models.IntegerField(null=True, blank=True)
 
     def __str__(self):
         return self.user.username
@@ -28,24 +29,24 @@ class Income(models.Model):
         ('pocket_money', 'Pocket Money'),
         ('side_hustle', 'Side Hustle'),
     ]
-
+    
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     source = models.CharField(max_length=20, choices=SOURCE_CHOICES)
     amount = models.DecimalField(max_digits=10, decimal_places=2)
 
     def __str__(self):
         return f"{self.user.username} - {self.source}"
-class Category(models.Model):
 
-    CATEGORY_TYPE = [
-        ('essential', 'Essential'),
-        ('lifestyle', 'Lifestyle'),
-        ('optional', 'Optional'),
-        ('savings', 'Savings'),
-    ]
-
+class Category(models.Model):    
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
     name = models.CharField(max_length=100)
-    category_type = models.CharField(max_length=20, choices=CATEGORY_TYPE)
+
+    suggested_percentage = models.FloatField(default=0)  # system suggestion
+    custom_percentage = models.FloatField(null=True, blank=True)
+
+    is_selected = models.BooleanField(default=True)
+
+    icon = models.CharField(max_length=100, default='default.svg')
 
     def __str__(self):
         return self.name
@@ -70,6 +71,3 @@ class Expense(models.Model):
     category = models.ForeignKey(Category, on_delete=models.CASCADE)
     amount = models.DecimalField(max_digits=10, decimal_places=2)
     date = models.DateField(auto_now_add=True)
-
-    def __str__(self):
-        return f"{self.user.username} - {self.amount}"

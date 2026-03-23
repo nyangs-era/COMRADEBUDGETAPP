@@ -9,9 +9,7 @@ class RegisterForm(forms.ModelForm):
     password = forms.CharField(widget=forms.PasswordInput)
 
     class Meta:
-
         model = User
-
         fields = ['username','email','password']
 
 
@@ -23,7 +21,7 @@ class ProfileForm(forms.ModelForm):
 
         model = Profile
 
-        fields = ['university_type','semester_duration','gender','budget_level']
+        fields = ['university_type','semester_duration',]
 
 # Income form
 class IncomeForm(forms.ModelForm):

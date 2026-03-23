@@ -1,0 +1,239 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<style>
+body {
+    background: linear-gradient(135deg, #0f172a, #1e293b);
+    color: white;
+}
+
+/* CARD */
+.category-card {
+    background: rgba(255,255,255,0.05);
+    backdrop-filter: blur(15px);
+    border-radius: 20px;
+    padding: 20px;
+    transition: 0.4s;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+}
+
+.category-card:hover {
+    transform: translateY(-10px) scale(1.02);
+}
+
+/* PROGRESS */
+.progress {
+    height: 20px;
+    border-radius: 10px;
+    background: #1e293b;
+}
+
+.progress-bar {
+    height: 100%;
+    border-radius: 10px;
+    background: linear-gradient(90deg, #22c55e, #4ade80);
+    width: 0%;
+    transition: 0.3s;
+}
+
+/* WARNING */
+.warning {
+    text-align: center;
+    margin-top: 10px;
+    font-weight: bold;
+}
+
+.good { color: #22c55e; }
+.bad { color: #ef4444; }
+
+/* Styled link as a button */
+.back-btn {
+    display: inline-block;
+    padding: 10px 18px;
+    border-radius: 10px;
+    text-decoration: none;
+    font-weight: bold;
+    color: #ffffff;
+    background: linear-gradient(45deg, #00c6ff, #0072ff);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    transition: all 0.3s ease;
+}
+
+/* Hover effect */
+.back-btn:hover {
+    transform: translateY(-2px) scale(1.05);
+    box-shadow: 0 0 12px rgba(0, 198, 255, 0.7),
+                0 0 25px rgba(0, 114, 255, 0.5);
+    background: linear-gradient(45deg, #0072ff, #00c6ff);
+}
+
+/* Optional: active click effect */
+.back-btn:active {
+    transform: scale(0.98);
+}
+
+</style>
+
+<h2 class="text-center mb-4">Customize Your Budget</h2>
+
+<!-- PROGRESS -->
+<div class="progress mb-3">
+    <div id="progressBar" class="progress-bar"></div>
+</div>
+
+<p id="totalText" class="text-center">Total: 0%</p>
+<p id="warning" class="warning"></p>
+
+<!-- ADD CATEGORY BUTTON -->
+<div class="text-center mb-3">
+    <button type="button" class="btn btn-primary" onclick="addCategoryCard()">
+        + Add Category
+    </button>
+</div>
+
+<form method="POST" onsubmit="return validateTotal()">
+{% csrf_token %}
+
+<div class="row" id="categoryContainer">
+
+{% for cat in categories %}
+<div class="col-md-4 mb-4">
+    <div class="category-card">
+
+        <div class="text-center mb-2">
+            <img src="/static/icons/{{ cat.icon }}" height="60">
+        </div>
+
+        <h5 class="text-center">{{ cat.name }}</h5>
+
+        <!-- TOGGLE -->
+        <div class="text-center my-2">
+            <label>
+                <input type="checkbox" name="cat_{{ cat.id }}" checked>
+            </label>
+        </div>
+
+        <!-- SLIDER -->
+        <input type="range" min="0" max="100"
+               value="{{ cat.suggested_percentage }}"
+               name="percent_{{ cat.id }}"
+               class="range"
+               oninput="updateTotal()">
+
+        <p class="text-center">
+            <span class="percent">{{ cat.suggested_percentage }}</span>% 
+            (<span class="amount">Ksh 0</span>)
+        </p>
+
+    </div>
+</div>
+{% endfor %}
+
+</div>
+
+<!-- TEMPLATE (HIDDEN) -->
+<div id="categoryTemplate" style="display:none;">
+    <div class="col-md-4 mb-4">
+        <div class="category-card">
+
+            <input type="text"
+                   name="new_category_name[]"
+                   placeholder="Category name"
+                   class="form-control mb-2"
+                   required>
+
+            <input type="range" min="0" max="100"
+                   value="0"
+                   name="new_category_percent[]"
+                   class="range"
+                   oninput="updateTotal()">
+
+            <p class="text-center">
+                <span class="percent">0</span>% 
+                (<span class="amount">Ksh 0</span>)
+            </p>
+
+        </div>
+    </div>
+</div>
+
+<button class="btn btn-success w-100 mt-4">Save Budget</button>
+<div style="padding: 20px;">
+    <a href="{% url 'dashboard' %}" class="back-btn"> Dashboard</a>
+</div>
+
+</form>
+
+<script>
+const totalIncome = {{ total_income|default:0 }};
+
+/* ADD NEW CATEGORY CARD */
+function addCategoryCard() {
+    let template = document.getElementById("categoryTemplate");
+    let clone = template.cloneNode(true);
+
+    clone.style.display = "block";
+    clone.removeAttribute("id");
+
+    document.getElementById("categoryContainer").appendChild(clone);
+
+    updateTotal();
+}
+
+/* UPDATE TOTAL + AMOUNTS */
+function updateTotal(){
+    let sliders = document.querySelectorAll('.range');
+    let total = 0;
+
+    sliders.forEach(slider => {
+        let percent = parseInt(slider.value);
+        total += percent;
+
+        // update percent text
+        let parent = slider.parentElement;
+        parent.querySelector('.percent').innerText = percent;
+
+        // calculate amount
+        let amount = (percent / 100) * totalIncome;
+
+        parent.querySelector('.amount').innerText =
+            "Ksh " + amount.toFixed(2);
+    });
+
+    document.getElementById("totalText").innerText = "Total: " + total + "%";
+
+    let progress = document.getElementById("progressBar");
+    progress.style.width = total + "%";
+
+    let warning = document.getElementById("warning");
+
+    if(total == 100){
+        warning.innerText = "Perfect Budget!";
+        warning.className = "warning good";
+    } else if(total > 100){
+        warning.innerText = "Over budget!";
+        warning.className = "warning bad";
+    } else {
+        warning.innerText = "Under budget!";
+        warning.className = "warning bad";
+    }
+}
+
+/* VALIDATION */
+function validateTotal(){
+    let total = 0;
+    document.querySelectorAll('.range').forEach(s => {
+        total += parseInt(s.value);
+    });
+
+    if(total !== 100){
+        alert("Total percent must equal 100%");
+        return false;
+    }
+    return true;
+}
+
+window.onload = updateTotal;
+</script>
+
+{% endblock %}

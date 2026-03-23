@@ -1,0 +1,141 @@
+{% extends 'base.html' %} 
+{% block content %}
+
+<style>
+/* Background */
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background: linear-gradient(-45deg, #0f2027, #203a43, #2c5364, #1c1c1c);
+    background-size: 400% 400%;
+    animation: gradientBG 12s ease infinite;
+}
+
+/* Animated background */
+@keyframes gradientBG {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+}
+
+/* Center wrapper */
+.page-wrapper {
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* Card */
+.form-card {
+    width: 420px;
+    padding: 30px;
+    border-radius: 16px;
+    background: rgba(255, 255, 255, 0.08);
+    backdrop-filter: blur(12px);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: #fff;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+/* Hover glow */
+.form-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 0 25px rgba(0, 255, 200, 0.3),
+                0 0 50px rgba(0, 150, 255, 0.2);
+}
+
+/* Title */
+.form-card h2 {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+/* Labels */
+.form-card label {
+    font-size: 14px;
+    margin-bottom: 5px;
+    display: block;
+}
+
+/* Inputs */
+.form-card input {
+    width: 100%;
+    padding: 10px;
+    margin: 8px 0 15px 0;
+    border-radius: 8px;
+    border: none;
+    outline: none;
+    background: rgba(255, 255, 255, 0.1);
+    color: #fff;
+    transition: all 0.3s ease;
+}
+
+/* Input focus glow */
+.form-card input:focus {
+    box-shadow: 0 0 8px rgba(0, 255, 200, 0.7);
+    background: rgba(255, 255, 255, 0.15);
+}
+
+/* Placeholder styling */
+.form-card input::placeholder {
+    color: rgba(255, 255, 255, 0.6);
+}
+
+/* Error text */
+.text-danger {
+    font-size: 12px;
+    margin-top: -10px;
+    margin-bottom: 10px;
+}
+
+/* Button */
+button {
+    width: 100%;
+    padding: 10px;
+    margin-top: 10px;
+    border: none;
+    border-radius: 8px;
+    background: linear-gradient(45deg, #00c9ff, #92fe9d);
+    color: #000;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+/* Button hover glow */
+button:hover {
+    transform: scale(1.05);
+    box-shadow: 0 0 15px rgba(0, 255, 150, 0.7),
+                0 0 30px rgba(0, 200, 255, 0.5);
+}
+</style>
+
+<div class="page-wrapper">
+    <div class="form-card">
+        <h2>Create Account</h2>
+
+        <form method="POST">
+            {% csrf_token %}
+
+            {{ form.non_field_errors }}
+
+            {% for field in form %}
+                <div>
+                    {{ field.label_tag }}
+                    {{ field }}
+                    <div class="text-danger">
+                        {{ field.errors }}
+                    </div>
+                </div>
+            {% endfor %}
+
+            <button type="submit">
+                Register
+            </button>
+        </form>
+    </div>
+</div>
+
+{% endblock %}

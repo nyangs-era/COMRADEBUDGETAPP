@@ -1,0 +1,122 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<style>
+body {
+    background: #483669;
+    color: white;
+}
+
+.card {
+    background: rgba(100, 248, 236, 0.47);
+    border-radius: 20px;
+    padding: 20px;
+    margin-bottom: 20px;
+}
+/* Back / Summary button */
+.back-btn {
+    display: inline-block;
+    padding: 8px 14px;
+    border-radius: 10px;
+    text-decoration: none;
+    font-weight: bold;
+    color: #ffffff;
+    background: linear-gradient(45deg, #00c6ff, #0072ff);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    transition: all 0.3s ease;
+}
+
+/* Hover effect */
+.back-btn:hover {
+    transform: translateY(-2px) scale(1.05);
+    box-shadow: 0 0 12px rgba(0, 198, 255, 0.7),
+                0 0 25px rgba(0, 114, 255, 0.5);
+    background: linear-gradient(45deg, #0072ff, #00c6ff);
+}
+
+/* Active click */
+.back-btn:active {
+    transform: scale(0.98);
+}
+
+</style>
+
+<!-- Navigation Bar -->
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <div class="container">
+        <a class="navbar-brand" href="/">💰 Comrade Budget</a>
+        <div>
+            <a href="/add_income/" class="btn btn-success btn-sm">Add Income</a>
+            <a href="/add_expense/" class="btn btn-danger btn-sm">Add Expense</a>
+            <a href="/logout/" class="btn btn-outline-light btn-sm">Logout</a>
+            <a href="{% url 'summary' %}" class="back-btn">📊 View Summary</a>
+        </div>
+    </div>
+</nav>
+
+
+<h2 class="mb-4">Analytics Dashboard</h2>
+
+<div class="card">
+  <div class="card-body text-danger">
+    <h4>Total Spending: Ksh {{ total_spending }}</h4>    
+  </div>
+</div>
+
+<div class="row">
+
+    <!-- PIE CHART -->
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-body text-warning">
+                <h5>Spending by Category</h5>
+            </div>
+            <canvas id="pieChart"></canvas>
+        </div>
+    </div>
+
+    <!-- BAR CHART -->
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-body text-warning">
+                <h5>Last 7 Days Spending</h5>
+            </div>            
+            <canvas id="barChart"></canvas>
+        </div>
+    </div>
+
+</div>
+
+<script>
+/* PIE CHART */
+const pieCtx = document.getElementById('pieChart');
+
+new Chart(pieCtx, {
+    type: 'pie',
+    data: {
+        labels: JSON.parse('{{ categories|safe|escapejs }}'),
+        datasets: [{
+            data: JSON.parse('{{ totals|safe|escapejs }}'),
+        }]
+    }
+});
+
+/* BAR CHART */
+const barCtx = document.getElementById('barChart');
+
+new Chart(barCtx, {
+    type: 'bar',
+    data: {
+        labels: JSON.parse('{{ days|safe|escapejs }}'),
+        datasets: [{
+            label: 'Spending',
+            data: JSON.parse('{{ daily_totals|safe|escapejs }}'),
+        }]
+    }
+});
+</script>
+
+{% endblock %}

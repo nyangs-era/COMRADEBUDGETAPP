@@ -1,0 +1,14 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<h3>Add New Category</h3>
+
+<form method="POST">
+    {% csrf_token %}
+
+    <input type="text" name="name" placeholder="Category Name" class="form-control mb-3">
+
+    <button class="btn btn-primary">Save</button>
+</form>
+
+{% endblock %}

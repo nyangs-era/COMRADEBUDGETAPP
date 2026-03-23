@@ -1,0 +1,174 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<style>
+/* Background */
+body {
+    background: radial-gradient(circle at top, #0f2027, #0a0a0a);
+}
+
+/* Wrapper */
+.login-wrapper {
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* Main container */
+.login-container {
+    width: 1000px;
+    height: 500px;
+    display: flex;
+    border-radius: 16px;
+    overflow: hidden;
+    position: relative;
+    box-shadow: 0 0 25px rgba(255, 0, 150, 0.3);
+}
+
+/* Glow border */
+.login-container::before {
+    content: "";
+    position: absolute;
+    inset: -5px;
+    background: linear-gradient(45deg, #ff416c, #8e2de2, #ff4b2b);
+    z-index: -1;
+    filter: blur(20px);
+    border-radius: 15px;
+}
+
+/* LEFT SIDE */
+.login-left {
+    width: 50%;
+    background: #0f172a;
+    padding: 40px;
+    color: white;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.login-left h3 {
+    margin-bottom: 25px;
+}
+
+/* Rounded modern inputs */
+.login-left input {
+    width: 100%;
+    padding: 12px 14px;
+    margin-bottom: 20px;
+    background: rgba(255, 255, 255, 0.05);
+    border: none;
+    border-radius: 10px;
+    color: white;
+    outline: none;
+    backdrop-filter: blur(5px);
+    transition: 0.3s;
+}
+
+.login-left input::placeholder {
+    color: #bbb;
+}
+
+/* Focus glow */
+.login-left input:focus {
+    background: rgba(255, 255, 255, 0.08);
+    box-shadow: 0 0 10px rgba(255, 75, 43, 0.3);
+}
+
+/* Button */
+.login-left button {
+    padding-top: 10px;
+    padding-bottom: 10px;
+    padding-left: 20px;
+    padding-right: 20px;
+    border: none;
+    border-radius: 20px;
+    background: linear-gradient(90deg, #ff416c, #ff4b2b, #8e2de2);
+    color: white;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.login-left button:hover {
+    opacity: 0.8;
+}
+
+/* Register text */
+.login-left p {
+    margin-top: 15px;
+    font-size: 14px;
+}
+
+.login-left a {
+    color: #ff4b2b;
+    text-decoration: none;
+}
+
+/* RIGHT SIDE */
+.login-right {
+    width: 50%;
+    background: linear-gradient(135deg, #ff416c, #8e2de2);
+    color: white;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text_align: center;
+    clip-path: polygon(20% 0, 100% 0, 100% 100%, 0% 100%);
+}
+
+.login-right h1 {
+    font-size: 32px;
+}
+</style>
+
+<div class="login-wrapper">
+    <div class="login-container">
+
+        <!-- LEFT -->
+        <div class="login-left">
+            <h3>Login</h3>
+
+            <form method="POST">
+                {% csrf_token %}
+                <p> Enter your username </p>
+
+                <input 
+                    type="text" 
+                    name="username" 
+                    placeholder="Username" 
+                    required
+                >
+                <p> Enter your password </p>
+
+                <input 
+                    type="password" 
+                    name="password" 
+                    placeholder="Password" 
+                    required
+                >
+
+                <button type="submit">
+                    Log in
+                </button>
+            </form>
+
+            <p>
+                Don’t have an account?
+                <a href="{% url 'register' %}">Register</a>
+            </p>
+        </div>
+
+        <!-- RIGHT -->
+        <div class="login-right">
+            <h1>Welcome</h1>
+            <h2>Save your shilling,</h2>
+            <h2>build your living</h2>
+
+        </div>
+
+    </div>
+</div>
+
+{% endblock %}

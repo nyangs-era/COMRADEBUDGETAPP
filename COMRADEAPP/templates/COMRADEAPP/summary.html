@@ -1,0 +1,163 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<style>
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background: linear-gradient(-45deg, #0f2027, #203a43, #2c5364, #1c1c1c);
+    background-size: 400% 400%;
+    animation: gradientBG 12s ease infinite;
+    color: #fff;
+}
+
+@keyframes gradientBG {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+}
+
+/* Layout */
+.summary-wrapper {
+    padding: 40px;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 20px;
+}
+
+/* Card base */
+.card {
+    padding: 20px;
+    border-radius: 14px;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+}
+
+/* Individual card colors */
+.income-card {
+    background: linear-gradient(135deg, #11998e, #38ef7d);
+    color: #0b1b13;
+}
+
+.spent-card {
+    background: linear-gradient(135deg, #ff512f, #dd2476);
+    color: #1a0b10;
+}
+
+.balance-card {
+    background: linear-gradient(135deg, #36d1dc, #5b86e5);
+    color: #06121f;
+}
+
+.budget-card {
+    background: linear-gradient(135deg, #f7971e, #ffd200);
+    color: #1a1400;
+}
+
+.category-card {
+    background: linear-gradient(135deg, #8e2de2, #4a00e0);
+    color: #ffffff;
+}
+
+/* Card titles */
+.card h3 {
+    margin-top: 0;
+    margin-bottom: 10px;
+    font-weight: bold;
+    font-size: 20px;
+}
+
+/* Main values */
+.card p {
+    font-size: 18px;
+    line-height: 1.6;
+}
+
+/* Category list */
+.card ul {
+    padding-left: 18px;
+}
+
+.card li {
+    font-size: 16px;
+    margin-bottom: 8px;
+}
+
+/* Emphasize key financial numbers */
+.income-card p,
+.spent-card p,
+.balance-card p {
+    font-size: 22px;
+    font-weight: bold;
+}
+
+/* Styled link as a button */
+.back-btn {
+    display: inline-block;
+    padding: 10px 18px;
+    border-radius: 10px;
+    text-decoration: none;
+    font-weight: bold;
+    color: #ffffff;
+    background: linear-gradient(45deg, #00c6ff, #0072ff);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    transition: all 0.3s ease;
+}
+
+/* Hover effect */
+.back-btn:hover {
+    transform: translateY(-2px) scale(1.05);
+    box-shadow: 0 0 12px rgba(0, 198, 255, 0.7),
+                0 0 25px rgba(0, 114, 255, 0.5);
+    background: linear-gradient(45deg, #0072ff, #00c6ff);
+}
+
+/* Optional: active click effect */
+.back-btn:active {
+    transform: scale(0.98);
+}
+</style>
+
+<div style="padding: 20px;">
+    <a href="{% url 'dashboard' %}" class="back-btn">← Back to Dashboard</a>
+</div>
+
+<div class="summary-wrapper">
+
+    <div class="card income-card">
+        <h3>Total Income</h3>
+        <p>{{ total_income }}</p>
+    </div>
+
+    <div class="card spent-card">
+        <h3>Total Spent</h3>
+        <p>{{ total_spent }}</p>
+    </div>
+
+    <div class="card balance-card">
+        <h3>Remaining Balance</h3>
+        <p>{{ remaining }}</p>
+    </div>
+
+    <div class="card budget-card">
+        <h3>Weekly Budget</h3>
+        <p>Weeks Left: {{ weeks_left|floatformat:1 }}</p>
+        <p>Recommended Weekly Spending: {{ weekly_budget|floatformat:2 }}</p>
+    </div>
+
+    <div class="card category-card">
+        <h3>Spending by Category</h3>
+        <ul>
+            {% for item in category_summary %}
+            <li>{{ item.category__name }}: {{ item.total }}</li>
+            {% endfor %}
+        </ul>
+    </div>
+
+</div>
+
+{% endblock %}
